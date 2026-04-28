@@ -1,99 +1,35 @@
-import { useEffect, useRef } from 'react'
-import { Link, Navigate } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { useAppStore, isAgreementComplete } from '../stores/useAppStore'
-import type { ApplicationStatus } from '../types'
 import { PageFade } from '../components/AnimatedLayout'
 import { useHydration } from '../hooks/useHydration'
 
-const steps: { key: ApplicationStatus; label: string }[] = [
-  { key: 'pending_review', label: 'Pending' },
-  { key: 'under_review', label: 'Under review' },
-  { key: 'sent_to_crystal', label: 'Sent to Crystal' },
-  { key: 'approved', label: 'Approved' },
-  { key: 'rejected', label: 'Rejected' },
+const sidebarLinks = [
+  { id: 'dashboard', label: 'DASHBOARD', icon: '⊞', active: true },
+  { id: 'profile', label: 'MY PROFILE', icon: '👤', active: false },
+  { id: 'applications', label: 'MY APPLICATIONS', icon: '📄', active: false },
+  { id: 'orders', label: 'MY ORDERS', icon: '📦', active: false },
+  { id: 'coins', label: 'MY COINS', icon: '🪙', active: false },
+  { id: 'investments', label: 'MY INVESTMENTS', icon: '📈', active: false },
+  { id: 'messages', label: 'MESSAGES', icon: '💬', badge: 2, active: false },
+  { id: 'support', label: 'SUPPORT', icon: '🎧', active: false },
+  { id: 'settings', label: 'SETTINGS', icon: '⚙️', active: false },
+  { id: 'logout', label: 'LOGOUT', icon: '🚪', active: false },
 ]
-
-function indexOfStatus(s: ApplicationStatus) {
-  return steps.findIndex((x) => x.key === s)
-}
-
-const badge: Record<ApplicationStatus, string> = {
-  pending_review: 'border-sky-500/40 bg-sky-500/10 text-sky-200',
-  under_review: 'border-amber-500/40 bg-amber-500/10 text-amber-200',
-  sent_to_crystal: 'border-violet-500/40 bg-violet-500/10 text-violet-200',
-  approved: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200',
-  rejected: 'border-red-500/40 bg-red-500/10 text-red-200',
-}
 
 export function DashboardPage() {
   const ready = useHydration()
   const user = useAppStore((s) => s.user)
   const agreement = useAppStore((s) => s.agreement)
   const app = useAppStore((s) => s.application)
-  const markSimulationStarted = useAppStore((s) => s.markSimulationStarted)
-  const timers = useRef<number[]>([])
+  const navigate = useNavigate()
 
   useEffect(() => {
-    const a0 = useAppStore.getState().application
-    if (!a0 || a0.id !== app?.id || a0.simulationStarted) {
-      return
-    }
-
-    const t1 = window.setTimeout(() => {
-      const base = useAppStore.getState().application
-      if (!base) return
-      const at = new Date().toISOString()
-      const next: ApplicationStatus = 'under_review'
-      useAppStore.getState().updateApplication({
-        status: next,
-        statusHistory: [
-          ...base.statusHistory,
-          { at, status: next, label: 'Application under review' },
-        ],
-      })
-      toast.info('Status update: under review by MERGE STARS.')
-    }, 3500)
-
-    const t2 = window.setTimeout(() => {
-      const base = useAppStore.getState().application
-      if (!base) return
-      const at = new Date().toISOString()
-      const next: ApplicationStatus = 'sent_to_crystal'
-      useAppStore.getState().updateApplication({
-        status: next,
-        statusHistory: [
-          ...base.statusHistory,
-          { at, status: next, label: 'Packet sent to financial partner' },
-        ],
-      })
-      toast.message('Application sent to Crystal', {
-        description: 'Partner is evaluating the request (simulated).',
-      })
-    }, 10000)
-
-    const t3 = window.setTimeout(() => {
-      const base = useAppStore.getState().application
-      if (!base) return
-      const at = new Date().toISOString()
-      const next: ApplicationStatus = 'approved'
-      useAppStore.getState().updateApplication({
-        status: next,
-        statusHistory: [
-          ...base.statusHistory,
-          { at, status: next, label: 'Funding approved' },
-        ],
-      })
-      markSimulationStarted()
-      toast.success('Partner approved the application (simulation).')
-    }, 18000)
-
-    timers.current = [t1, t2, t3]
-    return () => {
-      for (const id of timers.current) window.clearTimeout(id)
-    }
-  }, [app?.id, app?.simulationStarted, markSimulationStarted])
+    // If we have an app, it will trigger the simulation logic in useAppStore or we can just leave it as is.
+    // The simulation logic from the original dashboard is now moved to the summary page (Application Status).
+  }, [app])
 
   if (!ready) {
     return null
@@ -104,111 +40,199 @@ export function DashboardPage() {
   if (!isAgreementComplete(agreement)) {
     return <Navigate to="/terms" replace />
   }
-  if (!app) {
-    return <Navigate to="/application" replace />
-  }
 
-  const activeIndex = indexOfStatus(app.status) >= 0 ? indexOfStatus(app.status) : 0
-  const progress = ((activeIndex + 1) / steps.length) * 100
+  const handleLogout = () => {
+    useAppStore.getState().logout()
+    navigate('/')
+  }
 
   return (
     <PageFade>
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <div className="ms-glass ms-bg-animated rounded-2xl p-6 sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-semibold text-zinc-100 light:text-zinc-900">
-                Application status
-              </h1>
-              <p className="text-sm text-zinc-500">
-                Application <span className="font-mono text-amber-200/80">{app.id}</span>
-              </p>
+      <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
+        
+        <div className="flex flex-col gap-6 lg:flex-row">
+          
+          {/* SIDEBAR */}
+          <div className="w-full shrink-0 overflow-hidden rounded-2xl border border-white/5 bg-void-900/80 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl lg:w-64">
+            <div className="p-6 text-center border-b border-white/5">
+              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center text-3xl text-gold-500" aria-hidden>★</div>
+              <div className="font-display text-lg font-bold leading-none tracking-widest text-zinc-100">MERGE</div>
+              <div className="font-display text-sm font-medium leading-none tracking-[0.2em] text-zinc-400">STARS</div>
             </div>
-            <span
-              className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${badge[app.status]}`}
-            >
-              {steps.find((s) => s.key === app.status)?.label ?? app.status}
-            </span>
+            
+            <nav className="flex flex-col gap-1 p-4">
+              {sidebarLinks.map((link) => (
+                <button
+                  key={link.id}
+                  onClick={link.id === 'logout' ? handleLogout : undefined}
+                  className={`flex items-center justify-between rounded-lg px-4 py-3 text-xs font-bold tracking-wider transition-colors ${link.active ? 'bg-gold-500/10 text-gold-400 border border-gold-500/20' : 'text-zinc-500 hover:bg-void-800 hover:text-zinc-300'}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">{link.icon}</span>
+                    {link.label}
+                  </div>
+                  {link.badge && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                      {link.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </nav>
           </div>
 
-          <div className="mt-8">
-            <div className="relative h-1 w-full overflow-hidden rounded-full bg-void-950 light:bg-zinc-200">
-              <motion.div
-                className="h-full bg-gradient-to-r from-amber-300 to-amber-600"
-                initial={false}
-                animate={{ width: `${Math.min(100, progress)}%` }}
-                transition={{ type: 'spring', stiffness: 60, damping: 20 }}
-              />
+          {/* MAIN CONTENT */}
+          <div className="flex-1 space-y-6">
+            
+            {/* Header / Welcome */}
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+              <div>
+                <p className="text-xs tracking-wider text-zinc-500">Welcome back,</p>
+                <h1 className="font-display text-2xl font-bold tracking-widest text-zinc-100 uppercase">
+                  {user.firstName} {user.lastName}
+                </h1>
+                <p className="mt-1 text-xs font-mono tracking-wider text-gold-400">YOUR MERGE ID: {user.personalId}</p>
+              </div>
+              <div className="flex items-center gap-4">
+                 <button className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-void-950 text-zinc-400 hover:text-gold-400">
+                   🔔
+                 </button>
+                 <div className="h-10 w-10 overflow-hidden rounded-full border border-gold-500/30">
+                   <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" className="h-full w-full object-cover" />
+                 </div>
+              </div>
             </div>
-            <ol className="mt-4 flex flex-col gap-3 sm:grid sm:grid-cols-5 sm:gap-1">
-              {steps.map((s, i) => {
-                const done = i <= activeIndex
-                return (
-                  <li
-                    key={s.key}
-                    className="flex items-center gap-2 sm:flex-col sm:items-stretch"
-                  >
-                    <span
-                      className={`h-2 w-2 shrink-0 rounded-full sm:mx-auto ${
-                        done ? 'bg-amber-400' : 'bg-zinc-600'
-                      }`}
-                    />
-                    <span
-                      className={`text-xs sm:text-center ${
-                        done ? 'text-amber-100' : 'text-zinc-500'
-                      }`}
-                    >
-                      {s.label}
-                    </span>
-                  </li>
-                )
-              })}
-            </ol>
+
+            {/* Top Cards Row */}
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {/* MERGE COIN BALANCE */}
+              <div className="rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+                <h3 className="mb-4 text-xs font-bold tracking-widest text-zinc-500">MERGE COIN BALANCE</h3>
+                <div className="flex items-end gap-2">
+                  <span className="text-3xl font-bold text-zinc-100">12,450</span>
+                  <span className="mb-1 text-xs font-bold text-gold-400">MGS</span>
+                </div>
+                <button className="ms-btn-outline mt-6 w-full border-gold-500/30 py-2 text-xs hover:bg-gold-500/10 hover:text-gold-400">
+                  VIEW COIN
+                </button>
+              </div>
+
+              {/* APPLICATION STATUS */}
+              <div className="rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+                <h3 className="mb-4 text-xs font-bold tracking-widest text-zinc-500">APPLICATION STATUS</h3>
+                {app ? (
+                  <>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-400 uppercase">
+                      {app.status.replace('_', ' ')}
+                    </div>
+                    <p className="mt-3 text-[10px] leading-relaxed text-zinc-400">
+                      Your application is currently being processed.
+                    </p>
+                    <Link to="/summary" className="ms-btn-outline mt-4 w-full border-white/10 py-2 text-xs">
+                      VIEW DETAILS
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-sm font-medium text-zinc-400">No active application</div>
+                    <Link to="/application" className="ms-btn-gold mt-6 w-full py-2 text-xs">
+                      START NEW
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              {/* TOTAL INVESTMENTS */}
+              <div className="rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+                <h3 className="mb-4 text-xs font-bold tracking-widest text-zinc-500">TOTAL INVESTMENTS</h3>
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold text-zinc-100">$ 24,850 <span className="text-sm text-zinc-500">.00</span></span>
+                  <span className="mt-1 text-xs font-bold text-emerald-400">+14.6%</span>
+                </div>
+                {/* Mini chart placeholder */}
+                <div className="mt-6 h-10 w-full rounded bg-gradient-to-r from-void-950 to-void-800" />
+              </div>
+
+              {/* QUICK ACTIONS */}
+              <div className="rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+                <h3 className="mb-4 text-xs font-bold tracking-widest text-zinc-500">QUICK ACTIONS</h3>
+                <div className="flex flex-col gap-3">
+                  <button onClick={() => navigate('/application')} className="ms-btn-gold w-full justify-start py-2.5 text-xs text-left">
+                    <span className="mr-3">📄</span> NEW APPLICATION
+                  </button>
+                  <button className="flex w-full items-center justify-start rounded-lg border border-white/10 bg-transparent px-4 py-2.5 text-xs font-bold text-zinc-300 hover:border-gold-500/30 hover:text-gold-400">
+                    <span className="mr-3">📈</span> INVEST NOW
+                  </button>
+                  <button className="flex w-full items-center justify-start rounded-lg border border-white/10 bg-transparent px-4 py-2.5 text-xs font-bold text-zinc-300 hover:border-gold-500/30 hover:text-gold-400">
+                    <span className="mr-3">🛒</span> BROWSE PRODUCTS
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Section Row */}
+            <div className="grid gap-6 lg:grid-cols-3">
+              
+              {/* MY MERGE COIN (List) */}
+              <div className="rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl lg:col-span-2">
+                <h3 className="mb-6 text-xs font-bold tracking-widest text-zinc-500">MY MERGE COIN</h3>
+                
+                {app ? (
+                  <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/5 bg-void-950/50 p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gold-500/30 bg-void-900 text-xl text-gold-400 shadow-[0_0_15px_rgba(212,175,55,0.1)]">
+                        🪙
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold tracking-wider text-zinc-200 uppercase">{app.coinType}</h4>
+                        <div className="mt-1 flex gap-4 text-[10px] text-zinc-500">
+                          <span>Quantity: {app.amount}</span>
+                          <span>Purity: 99.9%</span>
+                          <span>Status: <span className="text-gold-400">In Production</span></span>
+                        </div>
+                      </div>
+                    </div>
+                    <button className="ms-btn-outline border-gold-500/30 px-6 py-2 text-xs">
+                      VIEW COIN
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center py-8 text-xs text-zinc-500">
+                    No coins found. Start an application first.
+                  </div>
+                )}
+              </div>
+
+              {/* LIVE METAL PRICES */}
+              <div className="rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+                <h3 className="mb-6 text-xs font-bold tracking-widest text-zinc-500">LIVE METAL PRICES</h3>
+                <div className="space-y-4">
+                  {[
+                    { name: 'Silver (Ag)', price: '$ 0.897', unit: '/g', change: '+1.23%', up: true },
+                    { name: 'Gold (Au)', price: '$ 67.42', unit: '/g', change: '+0.85%', up: true },
+                    { name: 'Platinum', price: '$ 32.15', unit: '/g', change: '-0.42%', up: false },
+                  ].map((metal, i) => (
+                    <div key={i} className="flex items-center justify-between rounded-lg border border-white/5 bg-void-950/40 p-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-2 w-2 rounded-full ${metal.up ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                        <span className="text-xs font-bold text-zinc-300">{metal.name}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-bold text-zinc-100">
+                          {metal.price} <span className="text-[10px] font-normal text-zinc-500">{metal.unit}</span>
+                        </div>
+                        <div className={`text-[10px] font-bold ${metal.up ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {metal.change}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
           </div>
 
-          <div className="mt-10">
-            <h2 className="text-sm font-medium text-zinc-400">Status history</h2>
-            <ul className="mt-2 divide-y divide-white/5 light:divide-zinc-200/80">
-              <AnimatePresence>
-                {[...app.statusHistory].reverse().map((h) => (
-                  <motion.li
-                    key={h.at + h.status}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex flex-col gap-0.5 py-3 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <span className="text-xs text-zinc-500">
-                      {new Date(h.at).toLocaleString()}
-                    </span>
-                    <span className="text-sm text-zinc-200 light:text-zinc-800">
-                      {h.label}
-                    </span>
-                    <span className="text-xs font-mono text-amber-200/60">{h.status}</span>
-                  </motion.li>
-                ))}
-              </AnimatePresence>
-            </ul>
-          </div>
-
-          <p className="mt-6 text-xs text-zinc-500">
-            Timed updates are simulated: ~3.5s review, then partner handoff, then approval. Reloading
-            the page rehydrates from local storage; the simulation only runs once per application.
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              to="/summary"
-              className="inline-flex items-center justify-center rounded-xl border border-white/10 px-4 py-2 text-sm text-zinc-200 light:border-zinc-300 light:text-zinc-800"
-            >
-              View mock invoice
-            </Link>
-            <Link
-              to="/"
-              className="inline-flex items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-200"
-            >
-              Home
-            </Link>
-          </div>
         </div>
       </div>
     </PageFade>

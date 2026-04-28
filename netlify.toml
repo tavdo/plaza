@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Single-page app: send all routes to index.html so React Router works
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  # Pin Node for consistent builds (optional; Netlify defaults are fine)
+  NODE_VERSION = "20"

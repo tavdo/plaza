@@ -1,74 +1,93 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAppStore } from '../stores/useAppStore'
-import { t } from '../lib/i18n'
 import clsx from 'clsx'
 
 const nav = [
-  { to: '/', label: 'nav.home' as const },
-  { to: '/register', label: 'nav.register' as const },
-  { to: '/terms', label: 'nav.terms' as const },
-  { to: '/application', label: 'nav.application' as const },
-  { to: '/summary', label: 'nav.summary' as const },
-  { to: '/dashboard', label: 'nav.dashboard' as const },
+  { to: '/', label: 'HOME' },
+  { to: '#collection', label: 'COLLECTION' },
+  { to: '#technology', label: 'TECHNOLOGY' },
+  { to: '#products', label: 'PRODUCTS' },
+  { to: '#invest', label: 'INVEST' },
+  { to: '#partnership', label: 'PARTNERSHIP' },
+  { to: '#about', label: 'ABOUT US' },
 ]
 
 export function MergeStarsHeader() {
-  const theme = useAppStore((s) => s.theme)
   const language = useAppStore((s) => s.language)
-  const setTheme = useAppStore((s) => s.setTheme)
   const setLanguage = useAppStore((s) => s.setLanguage)
+  const navigate = useNavigate()
+  
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-void-900/80 backdrop-blur-md light:border-zinc-200/80 light:bg-white/80">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight text-zinc-100 light:text-zinc-900">
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-amber-300 to-amber-600 text-void-900 shadow shadow-amber-500/20"
-            aria-hidden
-          >
+    <header className="sticky top-0 z-50 border-b border-white/5 bg-void-950/80 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+        
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center text-3xl text-gold-500 drop-shadow-[0_0_8px_rgba(212,175,55,0.5)]" aria-hidden>
             ★
-          </span>
-          <span className="hidden sm:inline">MERGE STARS</span>
+          </div>
+          <div className="hidden sm:flex flex-col">
+            <span className="font-display text-lg font-bold leading-none tracking-widest text-zinc-100">
+              MERGE
+            </span>
+            <span className="font-display text-sm font-medium leading-none tracking-[0.2em] text-zinc-400">
+              STARS
+            </span>
+          </div>
         </Link>
-        <nav className="hidden flex-1 items-center justify-center gap-1 md:flex">
+        
+        {/* Center Nav */}
+        <nav className="hidden flex-1 items-center justify-center gap-6 lg:flex">
           {nav.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                clsx(
-                  'rounded-lg px-2.5 py-1.5 text-xs font-medium sm:text-sm',
-                  isActive
-                    ? 'bg-white/5 text-amber-300 light:bg-amber-100 light:text-amber-900'
-                    : 'text-zinc-400 hover:text-zinc-200 light:text-zinc-600 light:hover:text-zinc-900',
-                )
-              }
-            >
-              {t(item.label, language)}
-            </NavLink>
+             item.to.startsWith('#') ? (
+              <a
+                key={item.label}
+                href={item.to}
+                className="text-xs font-semibold tracking-wider text-zinc-400 transition hover:text-gold-400"
+              >
+                {item.label}
+              </a>
+             ) : (
+              <NavLink
+                key={item.label}
+                to={item.to}
+                className={({ isActive }) =>
+                  clsx(
+                    'text-xs font-semibold tracking-wider transition',
+                    isActive ? 'text-zinc-100 border-b border-gold-500 pb-1' : 'text-zinc-400 hover:text-gold-400'
+                  )
+                }
+              >
+                {item.label}
+              </NavLink>
+             )
           ))}
         </nav>
-        <div className="flex items-center gap-2">
-          <label className="sr-only" htmlFor="lang">
-            {t('ui.language', language)}
-          </label>
-          <select
-            id="lang"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as 'en' | 'es')}
-            className="ms-input max-w-[5.5rem] py-1.5 text-xs"
-          >
-            <option value="en">EN</option>
-            <option value="es">ES</option>
-          </select>
+        
+        {/* Right Actions */}
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-2">
+            <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            </svg>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as 'en' | 'es')}
+              className="bg-transparent text-xs font-semibold tracking-wider text-zinc-200 outline-none cursor-pointer"
+            >
+              <option value="en" className="bg-void-900">EN</option>
+              <option value="es" className="bg-void-900">ES</option>
+            </select>
+          </div>
+          
           <button
-            type="button"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-zinc-200 light:border-zinc-200 light:bg-zinc-100 light:text-zinc-800"
-            aria-pressed={theme === 'light'}
+            onClick={() => navigate('/dashboard')}
+            className="ms-btn-gold rounded-full px-5 py-2 text-xs font-bold tracking-wider"
           >
-            {theme === 'dark' ? 'Light' : 'Dark'}
+            <span className="mr-2">🔒</span> DASHBOARD
           </button>
         </div>
+        
       </div>
     </header>
   )

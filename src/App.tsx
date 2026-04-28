@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { MergeStarsHeader } from './components/MergeStarsHeader'
@@ -12,25 +11,10 @@ import { LandingPage } from './pages/LandingPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { SummaryPage } from './pages/SummaryPage'
 import { TermsPage } from './pages/TermsPage'
-import { useAppStore } from './stores/useAppStore'
-
-function ThemeSync() {
-  const theme = useAppStore((s) => s.theme)
-  useEffect(() => {
-    const root = document.documentElement
-    if (theme === 'light') {
-      root.classList.add('light')
-    } else {
-      root.classList.remove('light')
-    }
-  }, [theme])
-  return null
-}
 
 export default function App() {
   return (
     <BrowserRouter>
-      <ThemeSync />
       <AnimatedOrbs />
       <div className="ms-bg-animated flex min-h-dvh flex-col">
         <MergeStarsHeader />
@@ -76,7 +60,7 @@ export default function App() {
           </Routes>
         </main>
       </div>
-      <Toaster position="top-center" richColors closeButton />
+      <Toaster position="top-center" theme="dark" richColors closeButton />
     </BrowserRouter>
   )
 }

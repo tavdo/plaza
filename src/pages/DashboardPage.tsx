@@ -1,7 +1,5 @@
 import { useEffect } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { toast } from 'sonner'
 import { useAppStore, isAgreementComplete } from '../stores/useAppStore'
 import { PageFade } from '../components/AnimatedLayout'
 import { useHydration } from '../hooks/useHydration'
@@ -42,7 +40,7 @@ export function DashboardPage() {
   }
 
   const handleLogout = () => {
-    useAppStore.getState().logout()
+    useAppStore.getState().resetAll()
     navigate('/')
   }
 

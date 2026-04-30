@@ -5,6 +5,7 @@ import { PageFade } from '../components/AnimatedLayout'
 import { useHydration } from '../hooks/useHydration'
 import { formatMoney, useTranslation } from '../hooks/useTranslation'
 import { displayCoinType, translateApplicationStatus } from '../lib/i18n'
+import { LANDING_METALS } from '../lib/markets'
 import type { Key } from '../lib/i18n'
 
 const sidebarDefs: { id: string; labelKey: Key; icon: string; active?: boolean; badge?: number }[] = [
@@ -47,11 +48,7 @@ export function DashboardPage() {
     navigate('/')
   }
 
-  const metals: { key: Key; price: string; change: string; up: boolean }[] = [
-    { key: 'dash.metal.silver', price: '$ 0.897', change: '+1.23%', up: true },
-    { key: 'dash.metal.gold', price: '$ 67.42', change: '+0.85%', up: true },
-    { key: 'dash.metal.platinum', price: '$ 32.15', change: '-0.42%', up: false },
-  ]
+  const metals = LANDING_METALS
 
   return (
     <PageFade>

@@ -9,6 +9,7 @@ const nav: { to: string; labelKey: Key }[] = [
   { to: '#collection', labelKey: 'header.collection' },
   { to: '#technology', labelKey: 'header.technology' },
   { to: '#products', labelKey: 'header.products' },
+  { to: '#markets', labelKey: 'land.markets.nav' },
   { to: '#invest', labelKey: 'header.invest' },
   { to: '#partnership', labelKey: 'header.partnership' },
   { to: '#about', labelKey: 'header.about' },

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAppStore, isAgreementComplete } from '../stores/useAppStore'
 import { useTranslation } from '../hooks/useTranslation'
+import { HeroMarketColumn } from '../components/HeroMarketColumn'
 import type { Key } from '../lib/i18n'
 
 export function LandingPage() {
@@ -18,12 +19,6 @@ export function LandingPage() {
         : user
           ? '/terms'
           : '/register'
-
-  const heroPanels: { titleKey: Key; descKey: Key; icon: string }[] = [
-    { titleKey: 'land.panel.filament.title', descKey: 'land.panel.filament.desc', icon: '🧊' },
-    { titleKey: 'land.panel.metals.title', descKey: 'land.panel.metals.desc', icon: '🟨' },
-    { titleKey: 'land.panel.limitless.title', descKey: 'land.panel.limitless.desc', icon: '✧' },
-  ]
 
   const strip: { icon: string; titleKey: Key; subKey: Key }[] = [
     { icon: '△', titleKey: 'land.strip.tech.title', subKey: 'land.strip.tech.sub' },
@@ -120,26 +115,8 @@ export function LandingPage() {
             </div>
           </motion.div>
 
-          <div className="lg:col-span-2 xl:col-span-3 flex flex-col justify-center gap-4">
-            {heroPanels.map((item, i) => (
-              <motion.div
-                key={item.titleKey}
-                className="ms-glass rounded-xl p-5 border border-white/5 hover:border-gold-500/30"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + i * 0.1, duration: 0.5 }}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-gold-500/20 bg-void-800 text-xl text-gold-400">
-                    {item.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-display text-sm font-bold tracking-wider text-zinc-100">{t(item.titleKey)}</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-zinc-400">{t(item.descKey)}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+          <div className="lg:col-span-2 xl:col-span-3 flex flex-col items-stretch justify-center gap-4">
+            <HeroMarketColumn />
           </div>
         </div>
       </section>

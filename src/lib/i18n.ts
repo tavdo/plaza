@@ -94,6 +94,15 @@ const EN = {
   'land.footer.support.title': 'DEDICATED SUPPORT',
   'land.footer.support.desc': 'We are here for you',
 
+  'land.markets.title': 'Metal prices & USD rate',
+  'land.markets.nav': 'RATES',
+  'land.usd.title': 'USD / GEL',
+  'land.usd.subtitle': 'Exchange rate (updated daily)',
+  'land.usd.loading': 'Loading rate…',
+  'land.usd.perUsd': '1 USD =',
+  'land.usd.currency': 'GEL',
+  'land.usd.note': 'Indicative reference only — not for trading.',
+
   // Register
   'reg.welcome.title1': 'Welcome Back to',
   'reg.welcome.title2': 'MERGE STARS',
@@ -358,6 +367,15 @@ const KA: Record<Key, string> = {
   'land.footer.community.desc': 'შეუერთდით ათასობით წევრს',
   'land.footer.support.title': 'გამოყოფილი მხარდაჭერა',
   'land.footer.support.desc': 'ჩვენ თქვენთან ვართ',
+
+  'land.markets.title': 'მეტალების ფასები და USD კურსი',
+  'land.markets.nav': 'კურსი',
+  'land.usd.title': 'USD / ლარი',
+  'land.usd.subtitle': 'გაცვლითი კურსი (დღიური განახლება)',
+  'land.usd.loading': 'კურსის ჩატვირთვა…',
+  'land.usd.perUsd': '1 USD =',
+  'land.usd.currency': 'ლარი',
+  'land.usd.note': 'მითითებითი საყოველთაოდო კურსი — არა სავაჭრო მიზნებისთვის.',
 
   'reg.welcome.title1': 'კეთილი იყოს თქვენი დაბრუნება',
   'reg.welcome.title2': 'MERGE STARS',

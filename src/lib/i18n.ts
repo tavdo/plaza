@@ -1,51 +1,546 @@
-type Lang = 'en' | 'ka'
+export type Lang = 'en' | 'ka'
 
-type Key =
-  | 'nav.home'
-  | 'nav.register'
-  | 'nav.terms'
-  | 'nav.application'
-  | 'nav.summary'
-  | 'nav.dashboard'
-  | 'ui.continue'
-  | 'ui.back'
-  | 'ui.submit'
-  | 'ui.loading'
-  | 'ui.language'
+const EN = {
+  // Nav / shared (legacy short keys)
+  'nav.home': 'Home',
+  'nav.register': 'Register',
+  'nav.terms': 'Terms',
+  'nav.application': 'Application',
+  'nav.summary': 'Summary',
+  'nav.dashboard': 'Dashboard',
+  'ui.continue': 'Continue',
+  'ui.back': 'Back',
+  'ui.submit': 'Submit application',
+  'ui.loading': 'Loading…',
+  'ui.language': 'Language',
+  'ui.view': 'View',
+  'ui.nextStep': 'NEXT STEP',
+  'ui.processing': 'Processing…',
+  'ui.saving': 'SAVING…',
+  'ui.submitting': 'SUBMITTING…',
 
-const dict: Record<Lang, Record<Key, string>> = {
-  en: {
-    'nav.home': 'Home',
-    'nav.register': 'Register',
-    'nav.terms': 'Terms',
-    'nav.application': 'Application',
-    'nav.summary': 'Summary',
-    'nav.dashboard': 'Dashboard',
-    'ui.continue': 'Continue',
-    'ui.back': 'Back',
-    'ui.submit': 'Submit application',
-    'ui.loading': 'Please wait…',
-    'ui.language': 'Language',
-  },
-  ka: {
-    'nav.home': 'მთავარი',
-    'nav.register': 'რეგისტრაცია',
-    'nav.terms': 'წესები',
-    'nav.application': 'განაცხადი',
-    'nav.summary': 'შეჯამება',
-    'nav.dashboard': 'დაფა',
-    'ui.continue': 'გაგრძელება',
-    'ui.back': 'უკან',
-    'ui.submit': 'განაცხადის გაგზავნა',
-    'ui.loading': 'გთხოვთ დაელოდოთ…',
-    'ui.language': 'ენა',
-  },
+  // Header
+  'header.home': 'HOME',
+  'header.collection': 'COLLECTION',
+  'header.technology': 'TECHNOLOGY',
+  'header.products': 'PRODUCTS',
+  'header.invest': 'INVEST',
+  'header.partnership': 'PARTNERSHIP',
+  'header.about': 'ABOUT US',
+  'header.dashboard': 'DASHBOARD',
+
+  // Landing — hero
+  'land.hero.line1': 'The Next Era of',
+  'land.hero.line2': 'Luxury',
+  'land.hero.line3': 'Is Here',
+  'land.hero.sub':
+    'MERGE STARS is a revolutionary platform combining advanced 3D filament technology with precious metals.',
+  'land.cta.explore': 'EXPLORE COLLECTION',
+  'land.cta.watch': 'WATCH VIDEO',
+
+  'land.panel.filament.title': '3D FILAMENT',
+  'land.panel.filament.desc': 'Patented 3D filament infused with real precious metals',
+  'land.panel.metals.title': 'REAL PRECIOUS METALS',
+  'land.panel.metals.desc': 'Gold, Silver, Platinum and more',
+  'land.panel.limitless.title': 'LIMITLESS POSSIBILITIES',
+  'land.panel.limitless.desc': 'From jewelry to architecture',
+
+  'land.strip.tech.title': '3D TECHNOLOGY',
+  'land.strip.tech.sub': 'Patented Innovation',
+  'land.strip.metals.title': 'REAL PRECIOUS METALS',
+  'land.strip.metals.sub': 'Infused In Every Product',
+  'land.strip.limitless.title': 'LIMITLESS POSSIBILITIES',
+  'land.strip.limitless.sub': 'Unlimited Applications',
+  'land.strip.global.title': 'GLOBAL PLATFORM',
+  'land.strip.global.sub': 'Serving Worldwide',
+  'land.strip.sustainable.title': 'SUSTAINABLE & LIGHTWEIGHT',
+  'land.strip.sustainable.sub': 'Future of Luxury',
+
+  'land.categories.title': 'EXPLORE BY CATEGORY',
+  'land.cat.jewelry': 'JEWELRY',
+  'land.cat.accessories': 'ACCESSORIES',
+  'land.cat.souvenirs': 'SOUVENIRS',
+  'land.cat.sanitary': 'SANITARYWARE',
+  'land.cat.stationery': 'STATIONERY',
+  'land.cat.construction': 'CONSTRUCTION MATERIALS',
+  'land.cat.more': 'MORE CATEGORIES',
+
+  'land.tech.title1': 'Revolutionary',
+  'land.tech.title2': '3D Filament Technology',
+  'land.tech.body':
+    'Our proprietary 3D filament is enriched with real precious metals, creating products that are lightweight, durable, and exude unmatched luxury.',
+  'land.tech.cta': 'DISCOVER TECHNOLOGY',
+  'land.tech.callout1.title': 'PRECIOUS METALS',
+  'land.tech.callout1.desc': 'Real gold, silver, platinum and more',
+  'land.tech.callout2.title': 'ADVANCED COMPOSITE',
+  'land.tech.callout2.desc': 'Proprietary blend for strength and beauty',
+  'land.tech.callout3.title': 'LIGHTWEIGHT CORE',
+  'land.tech.callout3.desc': 'Engineered for performance',
+
+  'land.invest.title': 'Invest In The Future',
+  'land.invest.body': 'Be part of a global movement redefining luxury, technology, and value.',
+  'land.invest.cta': 'LEARN MORE',
+  'land.invest.bullet1': 'HIGH GROWTH POTENTIAL',
+  'land.invest.bullet2': 'INNOVATIVE TECHNOLOGY',
+  'land.invest.bullet3': 'STRONG PARTNERSHIP',
+  'land.invest.bullet4': 'GLOBAL IMPACT',
+
+  'land.footer.secure.title': 'SECURE PLATFORM',
+  'land.footer.secure.desc': 'Your data is 100% protected',
+  'land.footer.fast.title': 'FAST & RELIABLE',
+  'land.footer.fast.desc': 'Seamless experience',
+  'land.footer.community.title': 'GLOBAL COMMUNITY',
+  'land.footer.community.desc': 'Join thousands of members',
+  'land.footer.support.title': 'DEDICATED SUPPORT',
+  'land.footer.support.desc': 'We are here for you',
+
+  // Register
+  'reg.welcome.title1': 'Welcome Back to',
+  'reg.welcome.title2': 'MERGE STARS',
+  'reg.welcome.sub': 'Access your account and manage your luxury assets.',
+  'reg.bullet.secure': 'Secure Platform',
+  'reg.bullet.trusted': 'Trusted by Crystals',
+  'reg.bullet.global': 'Global Community',
+  'reg.haveAccount': 'Already have an account?',
+  'reg.loginTab': 'LOGIN',
+  'reg.createTab': 'CREATE ACCOUNT',
+  'reg.step.personal': 'Personal Info',
+  'reg.step.security': 'Security',
+  'reg.step.agreement': 'Agreement',
+  'reg.label.firstName': 'First Name',
+  'reg.label.lastName': 'Last Name',
+  'reg.label.personalId': 'Personal ID Number',
+  'reg.label.phone': 'Phone Number',
+  'reg.label.email': 'Email',
+  'reg.label.password': 'Password',
+  'reg.ph.firstName': 'First name',
+  'reg.ph.lastName': 'Last name',
+  'reg.ph.personalId': 'Your ID number',
+  'reg.ph.phone': 'Your phone number',
+  'reg.ph.email': 'Your email',
+  'reg.ph.password': 'Your password',
+  'reg.fillDemo': 'Fill Demo Data',
+  'reg.redirecting': 'Redirecting…',
+  'reg.demoToast': 'Demo fields filled',
+
+  // Validation (forms)
+  'val.required': 'Required',
+  'val.email': 'Invalid email',
+  'val.passwordMin': 'At least 8 characters',
+  'val.acceptAll': 'Accept all items to continue',
+  'val.selectCoin': 'Select a coin type',
+  'val.amount': 'Enter a positive amount',
+  'val.phoneApp': 'Valid phone required',
+  'val.tooLong': 'Too long (max 2000 characters)',
+
+  // Toasts
+  'toast.accountCreated': 'Account created. User ID: {id}',
+  'toast.accountFail': 'Could not create account. Try again.',
+  'toast.disclosuresSaved': 'Disclosures stored locally.',
+  'toast.progressSaved.title': 'Progress saved',
+  'toast.progressSaved.desc': 'Autosaved to local storage.',
+  'toast.applicationReceived': 'Application received.',
+  'toast.submitFail': 'Unable to submit. Try again.',
+
+  // Terms
+  'terms.title': 'AGREEMENT & DISCLOSURES',
+  'terms.subtitle': 'Please read and agree to continue',
+  'terms.agreeContinue': 'I AGREE & CONTINUE',
+  'terms.item.platformTerms': 'I agree to the Terms & Conditions',
+  'terms.item.privacyPolicy': 'I agree to the Privacy Policy',
+  'terms.item.notLender': 'I understand that MERGE STARS is not a lender or financial institution.',
+  'terms.item.partnerFunding':
+    'I understand that funding is provided by our financial partner (Crystal).',
+  'terms.item.fundingSubject':
+    'I agree that funding approval is subject to evaluation and not guaranteed.',
+  'terms.item.informationAccurate': 'I confirm that all information provided is accurate.',
+
+  // Application flow
+  'app.formTitle': 'APPLICATION FORM',
+  'app.step.coin': 'Coin Details',
+  'app.step.personal': 'Personal Info',
+  'app.step.review': 'Review & Submit',
+  'app.stepOf': 'Step {n} of 3',
+  'app.label.coinType': 'Select Coin Type',
+  'app.label.quantity': 'Quantity',
+  'app.label.coinWeight': 'Coin Weight',
+  'app.label.grams1000': '1,000 grams',
+  'app.label.metalPurity': 'Metal Purity',
+  'app.label.silverAg': 'Silver (Ag)',
+  'app.label.purity': 'Purity',
+  'app.label.purityPct': '99.9%',
+  'app.label.specialRequest': 'Special Request (Optional)',
+  'app.ph.specialRequest': 'Enter any special request',
+  'app.label.fullName': 'Full Name',
+  'app.ph.ownerName': 'Owner name',
+  'app.label.contactPhone': 'Contact Phone',
+  'app.ph.phone': 'Phone',
+  'app.label.street': 'Street Address',
+  'app.ph.address': 'Address line 1',
+  'app.label.city': 'City',
+  'app.ph.city': 'City',
+  'app.label.postal': 'Postal Code',
+  'app.ph.postal': 'ZIP / Postal',
+  'app.summary.title': 'Order Summary',
+  'app.summary.coinType': 'Coin Type',
+  'app.summary.quantity': 'Quantity',
+  'app.summary.name': 'Name',
+  'app.summary.address': 'Address',
+  'app.submitBtn': 'SUBMIT APPLICATION',
+
+  'app.coin.silver': 'MERGE SILVER COIN (1KG)',
+  'app.coin.gold': 'MERGE GOLD COIN (1KG)',
+  'app.coin.platinum': 'MERGE PLATINUM COIN (1KG)',
+
+  // Summary page
+  'sum.title': 'Application summary',
+  'sum.subtitle': 'Reference your application ID in support requests.',
+  'sum.pending': 'Pending review',
+  'sum.appId': 'Application ID',
+  'sum.userId': 'User ID',
+  'sum.coin': 'Coin',
+  'sum.quantity': 'Quantity',
+  'sum.owner': 'Owner',
+  'sum.delivery': 'Delivery',
+  'sum.contact': 'Contact',
+  'sum.notes': 'Notes',
+  'sum.invoice.title': 'Mock invoice',
+  'sum.invoice.requested': 'Requested (metal value, mock)',
+  'sum.invoice.fee': 'Service fee',
+  'sum.invoice.total': 'Total',
+  'sum.openDashboard': 'Open status dashboard',
+
+  // Dashboard
+  'dash.welcome': 'Welcome back,',
+  'dash.mergeId': 'YOUR MERGE ID:',
+  'dash.profileAlt': 'Profile',
+  'dash.sidebar.dashboard': 'DASHBOARD',
+  'dash.sidebar.profile': 'MY PROFILE',
+  'dash.sidebar.applications': 'MY APPLICATIONS',
+  'dash.sidebar.orders': 'MY ORDERS',
+  'dash.sidebar.coins': 'MY COINS',
+  'dash.sidebar.investments': 'MY INVESTMENTS',
+  'dash.sidebar.messages': 'MESSAGES',
+  'dash.sidebar.support': 'SUPPORT',
+  'dash.sidebar.settings': 'SETTINGS',
+  'dash.sidebar.logout': 'LOGOUT',
+
+  'dash.card.balance': 'MERGE COIN BALANCE',
+  'dash.card.viewCoin': 'VIEW COIN',
+  'dash.card.appStatus': 'APPLICATION STATUS',
+  'dash.card.processing': 'Your application is currently being processed.',
+  'dash.card.viewDetails': 'VIEW DETAILS',
+  'dash.card.noApp': 'No active application',
+  'dash.card.startNew': 'START NEW',
+  'dash.card.investments': 'TOTAL INVESTMENTS',
+  'dash.card.quickActions': 'QUICK ACTIONS',
+  'dash.action.newApp': 'NEW APPLICATION',
+  'dash.action.invest': 'INVEST NOW',
+  'dash.action.browse': 'BROWSE PRODUCTS',
+
+  'dash.coin.title': 'MY MERGE COIN',
+  'dash.coin.qty': 'Quantity:',
+  'dash.coin.purityLabel': 'Purity:',
+  'dash.coin.statusLabel': 'Status:',
+  'dash.coin.inProduction': 'In Production',
+  'dash.coin.empty': 'No coins found. Start an application first.',
+
+  'dash.metals.title': 'LIVE METAL PRICES',
+  'dash.metal.silver': 'Silver (Ag)',
+  'dash.metal.gold': 'Gold (Au)',
+  'dash.metal.platinum': 'Platinum',
+  'dash.metal.perg': '/g',
+
+  // Application status labels
+  'status.pending_review': 'pending review',
+  'status.under_review': 'under review',
+  'status.sent_to_crystal': 'sent to crystal',
+  'status.approved': 'approved',
+  'status.rejected': 'rejected',
+} as const
+
+/** All UI copy keys — English is canonical; Georgian must define every key. */
+export type Key = keyof typeof EN
+
+/** Stored application values always use English product codes. */
+export const DEFAULT_COIN_TYPE_VALUE = EN['app.coin.silver']
+
+export const COIN_OPTION_KEYS: readonly Key[] = ['app.coin.silver', 'app.coin.gold', 'app.coin.platinum']
+
+const KA: Record<Key, string> = {
+  'nav.home': 'მთავარი',
+  'nav.register': 'რეგისტრაცია',
+  'nav.terms': 'წესები',
+  'nav.application': 'განაცხადი',
+  'nav.summary': 'შეჯამება',
+  'nav.dashboard': 'დაფა',
+  'ui.continue': 'გაგრძელება',
+  'ui.back': 'უკან',
+  'ui.submit': 'განაცხადის გაგზავნა',
+  'ui.loading': 'იტვირთება…',
+  'ui.language': 'ენა',
+  'ui.view': 'ნახვა',
+  'ui.nextStep': 'შემდეგი ნაბიჯი',
+  'ui.processing': 'მუშავდება…',
+  'ui.saving': 'ინახება…',
+  'ui.submitting': 'იგზავნება…',
+
+  'header.home': 'მთავარი',
+  'header.collection': 'კოლექცია',
+  'header.technology': 'ტექნოლოგია',
+  'header.products': 'პროდუქტები',
+  'header.invest': 'ინვესტიცია',
+  'header.partnership': 'პარტნიორობა',
+  'header.about': 'ჩვენს შესახებ',
+  'header.dashboard': 'დაფა',
+
+  'land.hero.line1': 'ახალი ერა',
+  'land.hero.line2': 'ლუქსის',
+  'land.hero.line3': 'დასაწყისი აქ არის',
+  'land.hero.sub':
+    'MERGE STARS — რევოლუციური პლატფორმა, რომელიც აერთიანებს განვითარებულ 3D ფილამენტის ტექნოლოგიას ძვირფას მეტალებთან.',
+  'land.cta.explore': 'კოლექციის გაცნობა',
+  'land.cta.watch': 'ვიდეოს ნახვა',
+
+  'land.panel.filament.title': '3D ფილამენტი',
+  'land.panel.filament.desc': 'პატენტებული 3D ფილამენტი რეალური ძვირფასი მეტალებით',
+  'land.panel.metals.title': 'რეალური ძვირფასი მეტალები',
+  'land.panel.metals.desc': 'ოქრო, ვერცხლი, პლატინა და სხვა',
+  'land.panel.limitless.title': 'შეუზღუდავი შესაძლებლობები',
+  'land.panel.limitless.desc': 'სამკაულებიდან არქიტექტურამდე',
+
+  'land.strip.tech.title': '3D ტექნოლოგია',
+  'land.strip.tech.sub': 'პატენტებური ინოვაცია',
+  'land.strip.metals.title': 'რეალური ძვირფასი მეტალები',
+  'land.strip.metals.sub': 'ყველა პროდუქტში ინფუზია',
+  'land.strip.limitless.title': 'შეუზღუდავი შესაძლებლობები',
+  'land.strip.limitless.sub': 'შეუზღუდავი გამოყენება',
+  'land.strip.global.title': 'გლობალური პლატფორმა',
+  'land.strip.global.sub': 'მსოფლიოს მასშტაბით',
+  'land.strip.sustainable.title': 'მდგრადი და მსუბუქი',
+  'land.strip.sustainable.sub': 'ლუქსის მომავალი',
+
+  'land.categories.title': 'კატეგორიების მიხედვით',
+  'land.cat.jewelry': 'სამკაული',
+  'land.cat.accessories': 'აქსესუარები',
+  'land.cat.souvenirs': 'სუვენირები',
+  'land.cat.sanitary': 'სანიტარია',
+  'land.cat.stationery': 'კანცელარია',
+  'land.cat.construction': 'სამშენებლო მასალები',
+  'land.cat.more': 'სხვა კატეგორიები',
+
+  'land.tech.title1': 'რევოლუციური',
+  'land.tech.title2': '3D ფილამენტის ტექნოლოგია',
+  'land.tech.body':
+    'ჩვენი ექსკლუზიური 3D ფილამენტი გამდიდრებულია რეალური ძვირფასი მეტალებით — პროდუქტები მსუბუქია, გამძლე და გამორჩეული ლუქსით.',
+  'land.tech.cta': 'ტექნოლოგიის გაცნობა',
+  'land.tech.callout1.title': 'ძვირფასი მეტალები',
+  'land.tech.callout1.desc': 'რეალური ოქრო, ვერცხლი, პლატინა და სხვა',
+  'land.tech.callout2.title': 'კომპოზიტი',
+  'land.tech.callout2.desc': 'პროპრიეტარული შერევა სიძლიერისა და ესთეტიკისთვის',
+  'land.tech.callout3.title': 'მსუბუქი ბირთვი',
+  'land.tech.callout3.desc': 'ოპტიმიზებული სიმძლავრისთვის',
+
+  'land.invest.title': 'დაინვესტეთ მომავალში',
+  'land.invest.body':
+    'გახდით გლობალური მოძრაობის ნაწილი, რომელიც ხელახლა განსაზღვრავს ლუქსს, ტექნოლოგიას და ღირებულებას.',
+  'land.invest.cta': 'გაიგეთ მეტი',
+  'land.invest.bullet1': 'მაღალი ზრდის პოტენციალი',
+  'land.invest.bullet2': 'ინოვაციური ტექნოლოგია',
+  'land.invest.bullet3': 'ძლიერი პარტნიორობა',
+  'land.invest.bullet4': 'გლობალური გავლენა',
+
+  'land.footer.secure.title': 'დაცული პლატფორმა',
+  'land.footer.secure.desc': 'თქვენი მონაცემები 100%-ით დაცულია',
+  'land.footer.fast.title': 'სწრაფი და საიმედო',
+  'land.footer.fast.desc': 'უწყვეტი გამოცდილება',
+  'land.footer.community.title': 'გლობალური საზოგადოება',
+  'land.footer.community.desc': 'შეუერთდით ათასობით წევრს',
+  'land.footer.support.title': 'გამოყოფილი მხარდაჭერა',
+  'land.footer.support.desc': 'ჩვენ თქვენთან ვართ',
+
+  'reg.welcome.title1': 'კეთილი იყოს თქვენი დაბრუნება',
+  'reg.welcome.title2': 'MERGE STARS',
+  'reg.welcome.sub': 'შედით ანგარიშში და მართეთ თქვენი ლუქს აქტივები.',
+  'reg.bullet.secure': 'დაცული პლატფორმა',
+  'reg.bullet.trusted': 'Crystal-ის ნდობით',
+  'reg.bullet.global': 'გლობალური საზოგადოება',
+  'reg.haveAccount': 'უკვე გაქვთ ანგარიში?',
+  'reg.loginTab': 'შესვლა',
+  'reg.createTab': 'ანგარიშის შექმნა',
+  'reg.step.personal': 'პირადი ინფო',
+  'reg.step.security': 'უსაფრთხოება',
+  'reg.step.agreement': 'შეთანხმება',
+  'reg.label.firstName': 'სახელი',
+  'reg.label.lastName': 'გვარი',
+  'reg.label.personalId': 'პირადი ნომერი',
+  'reg.label.phone': 'ტელეფონი',
+  'reg.label.email': 'ელფოსტა',
+  'reg.label.password': 'პაროლი',
+  'reg.ph.firstName': 'სახელი',
+  'reg.ph.lastName': 'გვარი',
+  'reg.ph.personalId': 'პირადი ნომერი',
+  'reg.ph.phone': 'ტელეფონის ნომერი',
+  'reg.ph.email': 'ელფოსტა',
+  'reg.ph.password': 'პაროლი',
+  'reg.fillDemo': 'დემო მონაცემები',
+  'reg.redirecting': 'მიმდინარეობს გადამისამართება…',
+  'reg.demoToast': 'დემო ველები შევსებულია',
+
+  'val.required': 'სავალდებულო ველი',
+  'val.email': 'არასწორი ელფოსტა',
+  'val.passwordMin': 'მინიმუმ 8 სიმბოლო',
+  'val.acceptAll': 'გასაგრძელებლად მონიშნეთ ყველა პუნქტი',
+  'val.selectCoin': 'აირჩიეთ მონეტის ტიპი',
+  'val.amount': 'შეიყვანეთ დადებითი რაოდენობა',
+  'val.phoneApp': 'სწორი ტელეფონი საჭიროა',
+  'val.tooLong': 'ძალიან გრძელია (მაქს. 2000 სიმბოლო)',
+
+  'toast.accountCreated': 'ანგარიში შექმნილია. მომხმარებლის ID: {id}',
+  'toast.accountFail': 'ანგარიშის შექმნა ვერ მოხერხდა. სცადეთ თავიდან.',
+  'toast.disclosuresSaved': 'განცხადებები შენახულია ადგილობრივად.',
+  'toast.progressSaved.title': 'პროგრესი შენახულია',
+  'toast.progressSaved.desc': 'ავტომატურად შენახულია ლოკალურ მეხსიერებაში.',
+  'toast.applicationReceived': 'განაცხადი მიღებულია.',
+  'toast.submitFail': 'გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.',
+
+  'terms.title': 'შეთანხმება და განცხადებები',
+  'terms.subtitle': 'გასაგრძელებლად წაიკითხეთ და დაეთანხმეთ',
+  'terms.agreeContinue': 'ვეთანხმები და ვაგრძელებ',
+  'terms.item.platformTerms': 'ვეთანხმები წესებსა და პირობებს',
+  'terms.item.privacyPolicy': 'ვეთანხმები კონფიდენციალურობის პოლიტიკას',
+  'terms.item.notLender': 'ვხვდები, რომ MERGE STARS არ არის საკრედიტო ინსტიტუტი ან ბანკი.',
+  'terms.item.partnerFunding':
+    'ვხვდები, რომ დაფინანსებას უზრუნველყოფს ჩვენი ფინანსური პარტნიორი (Crystal).',
+  'terms.item.fundingSubject':
+    'ვეთანხმები, რომ დაფინანსების დამტკიცება შეფასებაზეა დამოკიდებული და არ არის გარანტირებული.',
+  'terms.item.informationAccurate': 'ადასტურებ, რომ მითითებული ინფორმაცია სწორია.',
+
+  'app.formTitle': 'განაცხადის ფორმა',
+  'app.step.coin': 'მონეტის დეტალები',
+  'app.step.personal': 'პირადი ინფორმაცია',
+  'app.step.review': 'შემოწმება და გაგზავნა',
+  'app.stepOf': 'ნაბიჯი {n} / 3',
+  'app.label.coinType': 'მონეტის ტიპი',
+  'app.label.quantity': 'რაოდენობა',
+  'app.label.coinWeight': 'მონეტის წონა',
+  'app.label.grams1000': '1 000 გრამი',
+  'app.label.metalPurity': 'მეტალის სიწმინდე',
+  'app.label.silverAg': 'ვერცხლი (Ag)',
+  'app.label.purity': 'სიწმინდე',
+  'app.label.purityPct': '99.9%',
+  'app.label.specialRequest': 'სპეციალური მოთხოვნა (არასავალდებულო)',
+  'app.ph.specialRequest': 'მიუთითეთ სპეციალური მოთხოვნა',
+  'app.label.fullName': 'სრული სახელი',
+  'app.ph.ownerName': 'მფლობელის სახელი',
+  'app.label.contactPhone': 'საკონტაქტო ტელეფონი',
+  'app.ph.phone': 'ტელეფონი',
+  'app.label.street': 'მისამართი',
+  'app.ph.address': 'მისამართის ხაზი 1',
+  'app.label.city': 'ქალაქი',
+  'app.ph.city': 'ქალაქი',
+  'app.label.postal': 'საფოსტო ინდექსი',
+  'app.ph.postal': 'ZIP / ინდექსი',
+  'app.summary.title': 'შეკვეთის შეჯამება',
+  'app.summary.coinType': 'მონეტის ტიპი',
+  'app.summary.quantity': 'რაოდენობა',
+  'app.summary.name': 'სახელი',
+  'app.summary.address': 'მისამართი',
+  'app.submitBtn': 'განაცხადის გაგზავნა',
+
+  'app.coin.silver': 'MERGE ვერცხლის მონეტა (1 კგ)',
+  'app.coin.gold': 'MERGE ოქროს მონეტა (1 კგ)',
+  'app.coin.platinum': 'MERGE პლატინის მონეტა (1 კგ)',
+
+  'sum.title': 'განაცხადის შეჯამება',
+  'sum.subtitle': 'მხარდაჭერისთვის გამოიყენეთ განაცხადის ID.',
+  'sum.pending': 'განხილვის მოლოდინში',
+  'sum.appId': 'განაცხადის ID',
+  'sum.userId': 'მომხმარებლის ID',
+  'sum.coin': 'მონეტა',
+  'sum.quantity': 'რაოდენობა',
+  'sum.owner': 'მფლობელი',
+  'sum.delivery': 'მიწოდება',
+  'sum.contact': 'კონტაქტი',
+  'sum.notes': 'შენიშვნები',
+  'sum.invoice.title': 'სიმულაციური ინვოისი',
+  'sum.invoice.requested': 'მოთხოვნილი (მეტალის ღირებულება, სიმულაცია)',
+  'sum.invoice.fee': 'სერვისის საფასური',
+  'sum.invoice.total': 'სულ',
+  'sum.openDashboard': 'სტატუსის დაფის გახსნა',
+
+  'dash.welcome': 'კეთილი იყოს დაბრუნება,',
+  'dash.mergeId': 'თქვენი MERGE ID:',
+  'dash.profileAlt': 'პროფილი',
+  'dash.sidebar.dashboard': 'დაფა',
+  'dash.sidebar.profile': 'ჩემი პროფილი',
+  'dash.sidebar.applications': 'ჩემი განაცხადები',
+  'dash.sidebar.orders': 'ჩემი შეკვეთები',
+  'dash.sidebar.coins': 'ჩემი მონეტები',
+  'dash.sidebar.investments': 'ჩემი ინვესტიციები',
+  'dash.sidebar.messages': 'შეტყობინებები',
+  'dash.sidebar.support': 'მხარდაჭერა',
+  'dash.sidebar.settings': 'პარამეტრები',
+  'dash.sidebar.logout': 'გასვლა',
+
+  'dash.card.balance': 'MERGE მონეტის ბალანსი',
+  'dash.card.viewCoin': 'მონეტის ნახვა',
+  'dash.card.appStatus': 'განაცხადის სტატუსი',
+  'dash.card.processing': 'თქვენი განაცხადი მუშავდება.',
+  'dash.card.viewDetails': 'დეტალები',
+  'dash.card.noApp': 'აქტიური განაცხადი არ არის',
+  'dash.card.startNew': 'ახლის დაწყება',
+  'dash.card.investments': 'სულ ინვესტიციები',
+  'dash.card.quickActions': 'სწრავი მოქმედებები',
+  'dash.action.newApp': 'ახალი განაცხადი',
+  'dash.action.invest': 'ინვესტირება',
+  'dash.action.browse': 'პროდუქტების ნახვა',
+
+  'dash.coin.title': 'ჩემი MERGE მონეტა',
+  'dash.coin.qty': 'რაოდენობა:',
+  'dash.coin.purityLabel': 'სიწმინდე:',
+  'dash.coin.statusLabel': 'სტატუსი:',
+  'dash.coin.inProduction': 'წარმოებაში',
+  'dash.coin.empty': 'მონეტები არ მოიძებნა. დაიწყეთ განაცხადით.',
+
+  'dash.metals.title': 'მეტალების ფასები (ლაივ)',
+  'dash.metal.silver': 'ვერცხლი (Ag)',
+  'dash.metal.gold': 'ოქრო (Au)',
+  'dash.metal.platinum': 'პლატინა',
+  'dash.metal.perg': '/გ',
+
+  'status.pending_review': 'განხილვის მოლოდინში',
+  'status.under_review': 'განხილვის პროცესში',
+  'status.sent_to_crystal': 'Crystal-ზე გაგზავნილი',
+  'status.approved': 'დამტკიცებული',
+  'status.rejected': 'უარყოფილი',
 }
 
-export function t(key: Key, lang: Lang): string {
-  const row = dict[lang]
-  return row[key] ?? dict.en[key] ?? key
+export function t(key: Key, lang: Lang, vars?: Record<string, string | number>): string {
+  const row = lang === 'ka' ? KA : EN
+  let s = row[key] ?? EN[key] ?? key
+  if (vars) {
+    for (const [k, v] of Object.entries(vars)) {
+      s = s.replaceAll(`{${k}}`, String(v))
+    }
+  }
+  return s
 }
 
-export type { Lang, Key }
-export { dict }
+const COIN_STORE_TO_KEY: Record<string, Key> = {
+  [EN['app.coin.silver']]: 'app.coin.silver',
+  [EN['app.coin.gold']]: 'app.coin.gold',
+  [EN['app.coin.platinum']]: 'app.coin.platinum',
+  'MERGE SILVER': 'app.coin.silver',
+}
+
+export function displayCoinType(stored: string, lang: Lang): string {
+  const key = COIN_STORE_TO_KEY[stored]
+  return key ? t(key, lang) : stored
+}
+
+export function translateApplicationStatus(status: string, lang: Lang): string {
+  const k = `status.${status}`
+  if (k in EN) return t(k as Key, lang)
+  return status.replace(/_/g, ' ')
+}

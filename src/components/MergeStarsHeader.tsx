@@ -1,19 +1,21 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAppStore } from '../stores/useAppStore'
-import type { Lang } from '../lib/i18n'
+import type { Key, Lang } from '../lib/i18n'
+import { useTranslation } from '../hooks/useTranslation'
 import clsx from 'clsx'
 
-const nav = [
-  { to: '/', label: 'HOME' },
-  { to: '#collection', label: 'COLLECTION' },
-  { to: '#technology', label: 'TECHNOLOGY' },
-  { to: '#products', label: 'PRODUCTS' },
-  { to: '#invest', label: 'INVEST' },
-  { to: '#partnership', label: 'PARTNERSHIP' },
-  { to: '#about', label: 'ABOUT US' },
+const nav: { to: string; labelKey: Key }[] = [
+  { to: '/', labelKey: 'header.home' },
+  { to: '#collection', labelKey: 'header.collection' },
+  { to: '#technology', labelKey: 'header.technology' },
+  { to: '#products', labelKey: 'header.products' },
+  { to: '#invest', labelKey: 'header.invest' },
+  { to: '#partnership', labelKey: 'header.partnership' },
+  { to: '#about', labelKey: 'header.about' },
 ]
 
 export function MergeStarsHeader() {
+  const { t } = useTranslation()
   const language = useAppStore((s) => s.language)
   const setLanguage = useAppStore((s) => s.setLanguage)
   const navigate = useNavigate()
@@ -42,15 +44,15 @@ export function MergeStarsHeader() {
           {nav.map((item) => (
              item.to.startsWith('#') ? (
               <a
-                key={item.label}
+                key={item.labelKey}
                 href={item.to}
                 className="text-xs font-semibold tracking-wider text-zinc-400 transition hover:text-gold-400"
               >
-                {item.label}
+                {t(item.labelKey)}
               </a>
              ) : (
               <NavLink
-                key={item.label}
+                key={item.labelKey}
                 to={item.to}
                 className={({ isActive }) =>
                   clsx(
@@ -59,7 +61,7 @@ export function MergeStarsHeader() {
                   )
                 }
               >
-                {item.label}
+                {t(item.labelKey)}
               </NavLink>
              )
           ))}
@@ -75,6 +77,7 @@ export function MergeStarsHeader() {
               value={language}
               onChange={(e) => setLanguage(e.target.value as Lang)}
               className="bg-transparent text-xs font-semibold tracking-wider text-zinc-200 outline-none cursor-pointer"
+              aria-label={t('ui.language')}
             >
               <option value="en" className="bg-void-900">EN</option>
               <option value="ka" className="bg-void-900">KA</option>
@@ -85,7 +88,7 @@ export function MergeStarsHeader() {
             onClick={() => navigate('/dashboard')}
             className="ms-btn-gold rounded-full px-5 py-2 text-xs font-bold tracking-wider"
           >
-            <span className="mr-2">🔒</span> DASHBOARD
+            <span className="mr-2">🔒</span> {t('header.dashboard')}
           </button>
         </div>
         

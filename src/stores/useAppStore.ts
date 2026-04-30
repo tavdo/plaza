@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Agreement, BrandCoinApplication, User } from '../types'
 import { generateId } from '../lib/ids'
-import type { Lang } from '../lib/i18n'
+import { DEFAULT_COIN_TYPE_VALUE, type Lang } from '../lib/i18n'
 
 type AppState = {
   theme: 'dark' | 'light'
@@ -44,7 +44,7 @@ export type ApplicationDraft = {
 }
 
 export const defaultApplicationDraft: ApplicationDraft = {
-  coinType: 'MERGE SILVER',
+  coinType: DEFAULT_COIN_TYPE_VALUE,
   amount: 1,
   ownerName: '',
   deliveryLine1: '',
@@ -59,7 +59,7 @@ export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       theme: 'dark',
-      language: 'en' as Lang,
+      language: 'ka' as Lang,
       user: null,
       agreement: null,
       application: null,

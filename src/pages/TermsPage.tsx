@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,28 +8,32 @@ import { toast } from 'sonner'
 import { isAgreementComplete, useAppStore } from '../stores/useAppStore'
 import { PageFade } from '../components/AnimatedLayout'
 import { useHydration } from '../hooks/useHydration'
+import { useTranslation } from '../hooks/useTranslation'
+import type { Key } from '../lib/i18n'
 
-const termsSchema = z
-  .object({
-    platformTerms: z.boolean(),
-    privacyPolicy: z.boolean(),
-    notLender: z.boolean(),
-    partnerFunding: z.boolean(),
-    fundingSubjectToEvaluation: z.boolean(),
-    informationAccurate: z.boolean(),
-  })
-  .refine(
-    (d) =>
-      d.platformTerms &&
-      d.privacyPolicy &&
-      d.notLender &&
-      d.partnerFunding &&
-      d.fundingSubjectToEvaluation &&
-      d.informationAccurate,
-    { path: ['root'], message: 'Accept all items to continue' },
-  )
+type TermsForm = z.infer<ReturnType<typeof buildTermsSchema>>
 
-type TermsForm = z.infer<typeof termsSchema>
+function buildTermsSchema(tr: (k: Key) => string) {
+  return z
+    .object({
+      platformTerms: z.boolean(),
+      privacyPolicy: z.boolean(),
+      notLender: z.boolean(),
+      partnerFunding: z.boolean(),
+      fundingSubjectToEvaluation: z.boolean(),
+      informationAccurate: z.boolean(),
+    })
+    .refine(
+      (d) =>
+        d.platformTerms &&
+        d.privacyPolicy &&
+        d.notLender &&
+        d.partnerFunding &&
+        d.fundingSubjectToEvaluation &&
+        d.informationAccurate,
+      { path: ['root'], message: tr('val.acceptAll') },
+    )
+}
 
 const defaultValues: TermsForm = {
   platformTerms: false,
@@ -40,16 +44,18 @@ const defaultValues: TermsForm = {
   informationAccurate: false,
 }
 
-const items: { id: keyof TermsForm; text: string; hasLink?: boolean }[] = [
-  { id: 'platformTerms', text: 'I agree to the Terms & Conditions', hasLink: true },
-  { id: 'privacyPolicy', text: 'I agree to the Privacy Policy', hasLink: true },
-  { id: 'notLender', text: 'I understand that MERGE STARS is not a lender or financial institution.' },
-  { id: 'partnerFunding', text: 'I understand that funding is provided by our financial partner (Crystal).' },
-  { id: 'fundingSubjectToEvaluation', text: 'I agree that funding approval is subject to evaluation and not guaranteed.' },
-  { id: 'informationAccurate', text: 'I confirm that all information provided is accurate.' },
+const itemDefs: { id: keyof TermsForm; textKey: Key; hasLink?: boolean }[] = [
+  { id: 'platformTerms', textKey: 'terms.item.platformTerms', hasLink: true },
+  { id: 'privacyPolicy', textKey: 'terms.item.privacyPolicy', hasLink: true },
+  { id: 'notLender', textKey: 'terms.item.notLender' },
+  { id: 'partnerFunding', textKey: 'terms.item.partnerFunding' },
+  { id: 'fundingSubjectToEvaluation', textKey: 'terms.item.fundingSubject' },
+  { id: 'informationAccurate', textKey: 'terms.item.informationAccurate' },
 ]
 
 export function TermsPage() {
+  const { t } = useTranslation()
+  const language = useAppStore((s) => s.language)
   const ready = useHydration()
   const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
@@ -57,6 +63,8 @@ export function TermsPage() {
   const setAgreement = useAppStore((s) => s.setAgreement)
   const [loading, setLoading] = useState(false)
   const application = useAppStore((s) => s.application)
+
+  const termsSchema = useMemo(() => buildTermsSchema(t), [t, language])
 
   const { control, handleSubmit, reset } = useForm<TermsForm>({
     defaultValues: agreement
@@ -66,14 +74,14 @@ export function TermsPage() {
           notLender: agreement.notLender,
           partnerFunding: agreement.partnerFunding,
           fundingSubjectToEvaluation: agreement.fundingSubjectToEvaluation,
-          informationAccurate: agreement.fundingTerms || false, // Fallback for old schema
+          informationAccurate: agreement.fundingTerms || false,
         }
       : defaultValues,
     resolver: zodResolver(termsSchema),
   })
 
   const watched = useWatch({ control })
-  const allTrue = items.every((i) => watched?.[i.id] === true)
+  const allTrue = itemDefs.every((i) => watched?.[i.id] === true)
 
   useEffect(() => {
     if (agreement && isAgreementComplete(agreement)) {
@@ -83,7 +91,7 @@ export function TermsPage() {
         notLender: agreement.notLender,
         partnerFunding: agreement.partnerFunding,
         fundingSubjectToEvaluation: agreement.fundingSubjectToEvaluation,
-        informationAccurate: agreement.fundingTerms || false, // mapping old fundingTerms
+        informationAccurate: agreement.fundingTerms || false,
       })
     }
   }, [agreement, reset])
@@ -104,7 +112,6 @@ export function TermsPage() {
   const onValid = (data: TermsForm) => {
     setLoading(true)
     window.setTimeout(() => {
-      // Map it back to the store schema
       setAgreement({
         platformTerms: data.platformTerms,
         privacyPolicy: data.privacyPolicy,
@@ -112,9 +119,9 @@ export function TermsPage() {
         notLender: data.notLender,
         partnerFunding: data.partnerFunding,
         fundingSubjectToEvaluation: data.fundingSubjectToEvaluation,
-        acceptedAt: new Date().toISOString()
+        acceptedAt: new Date().toISOString(),
       })
-      toast.success('Disclosures stored locally.')
+      toast.success(t('toast.disclosuresSaved'))
       setLoading(false)
       void navigate('/application', { replace: true })
     }, 500)
@@ -124,8 +131,7 @@ export function TermsPage() {
     <PageFade>
       <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:py-20">
         <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-void-900/80 p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:p-10">
-          
-          {/* Padlock Graphic (Background) */}
+
           <div className="pointer-events-none absolute -right-16 top-1/2 -translate-y-1/2 opacity-20 sm:opacity-40">
             <div className="flex h-64 w-64 items-center justify-center rounded-full bg-gold-500/10 blur-3xl" />
             <div className="absolute inset-0 flex items-center justify-center text-9xl text-gold-500 drop-shadow-[0_0_30px_rgba(212,175,55,0.8)]">
@@ -135,14 +141,14 @@ export function TermsPage() {
 
           <div className="relative z-10">
             <h1 className="font-display text-2xl font-bold tracking-wide text-zinc-100">
-              AGREEMENT & DISCLOSURES
+              {t('terms.title')}
             </h1>
             <p className="mt-2 text-sm text-zinc-400">
-              Please read and agree to continue
+              {t('terms.subtitle')}
             </p>
 
             <form className="mt-8 space-y-4" onSubmit={handleSubmit(onValid)}>
-              {items.map((item) => (
+              {itemDefs.map((item) => (
                 <Controller
                   key={item.id}
                   name={item.id}
@@ -165,9 +171,9 @@ export function TermsPage() {
                         onChange={(e) => onChange(e.target.checked)}
                       />
                       <span className="flex-1 text-sm text-zinc-300">
-                        {item.text}
+                        {t(item.textKey)}
                         {item.hasLink && (
-                          <button type="button" className="ml-2 text-gold-400 hover:underline">View</button>
+                          <button type="button" className="ml-2 text-gold-400 hover:underline">{t('ui.view')}</button>
                         )}
                       </span>
                     </label>
@@ -182,7 +188,7 @@ export function TermsPage() {
                   disabled={!allTrue || loading}
                   whileTap={{ scale: 0.99 }}
                 >
-                  {loading ? 'SAVING…' : 'I AGREE & CONTINUE'}
+                  {loading ? t('ui.saving') : t('terms.agreeContinue')}
                 </motion.button>
               </div>
             </form>
@@ -192,4 +198,3 @@ export function TermsPage() {
     </PageFade>
   )
 }
-

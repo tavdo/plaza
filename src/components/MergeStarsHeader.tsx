@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAppStore } from '../stores/useAppStore'
+import type { Lang } from '../lib/i18n'
 import clsx from 'clsx'
 
 const nav = [
@@ -72,11 +73,11 @@ export function MergeStarsHeader() {
             </svg>
             <select
               value={language}
-              onChange={(e) => setLanguage(e.target.value as 'en' | 'es')}
+              onChange={(e) => setLanguage(e.target.value as Lang)}
               className="bg-transparent text-xs font-semibold tracking-wider text-zinc-200 outline-none cursor-pointer"
             >
               <option value="en" className="bg-void-900">EN</option>
-              <option value="es" className="bg-void-900">ES</option>
+              <option value="ka" className="bg-void-900">KA</option>
             </select>
           </div>
           

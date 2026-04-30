@@ -141,7 +141,16 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'merge-stars',
-      version: 1,
+      version: 2,
+      migrate: (persistedState, version) => {
+        if (version < 2 && persistedState && typeof persistedState === 'object') {
+          const p = persistedState as { language?: string }
+          if (p.language === 'es') {
+            return { ...p, language: 'ka' satisfies Lang }
+          }
+        }
+        return persistedState
+      },
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         theme: s.theme,

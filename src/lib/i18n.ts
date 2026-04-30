@@ -1,4 +1,4 @@
-type Lang = 'en' | 'es'
+type Lang = 'en' | 'ka'
 
 type Key =
   | 'nav.home'
@@ -27,26 +27,24 @@ const dict: Record<Lang, Record<Key, string>> = {
     'ui.loading': 'Please wait…',
     'ui.language': 'Language',
   },
-  es: {
-    'nav.home': 'Inicio',
-    'nav.register': 'Registro',
-    'nav.terms': 'Términos',
-    'nav.application': 'Solicitud',
-    'nav.summary': 'Resumen',
-    'nav.dashboard': 'Panel',
-    'ui.continue': 'Continuar',
-    'ui.back': 'Atrás',
-    'ui.submit': 'Enviar solicitud',
-    'ui.loading': 'Espere…',
-    'ui.language': 'Idioma',
+  ka: {
+    'nav.home': 'მთავარი',
+    'nav.register': 'რეგისტრაცია',
+    'nav.terms': 'წესები',
+    'nav.application': 'განაცხადი',
+    'nav.summary': 'შეჯამება',
+    'nav.dashboard': 'დაფა',
+    'ui.continue': 'გაგრძელება',
+    'ui.back': 'უკან',
+    'ui.submit': 'განაცხადის გაგზავნა',
+    'ui.loading': 'გთხოვთ დაელოდოთ…',
+    'ui.language': 'ენა',
   },
 }
 
-export function t(
-  key: Key,
-  lang: Lang
-): string {
-  return dict[lang][key] ?? dict.en[key] ?? key
+export function t(key: Key, lang: Lang): string {
+  const row = dict[lang]
+  return row[key] ?? dict.en[key] ?? key
 }
 
 export type { Lang, Key }

@@ -55,7 +55,6 @@ const itemDefs: { id: keyof TermsForm; textKey: Key; hasLink?: boolean }[] = [
 
 export function TermsPage() {
   const { t } = useTranslation()
-  const language = useAppStore((s) => s.language)
   const ready = useHydration()
   const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
@@ -64,7 +63,7 @@ export function TermsPage() {
   const [loading, setLoading] = useState(false)
   const application = useAppStore((s) => s.application)
 
-  const termsSchema = useMemo(() => buildTermsSchema(t), [t, language])
+  const termsSchema = useMemo(() => buildTermsSchema(t), [t])
 
   const { control, handleSubmit, reset } = useForm<TermsForm>({
     defaultValues: agreement

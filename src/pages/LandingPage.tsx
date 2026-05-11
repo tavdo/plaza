@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useAppStore, isAgreementComplete } from '../stores/useAppStore'
 import { useTranslation } from '../hooks/useTranslation'
 import { HeroMarketColumn } from '../components/HeroMarketColumn'
+import { LandingMarketCards } from '../components/LandingMarketCards'
 import type { Key } from '../lib/i18n'
 
 export function LandingPage() {
@@ -36,6 +37,20 @@ export function LandingPage() {
     { titleKey: 'land.cat.stationery', icon: '✒️' },
     { titleKey: 'land.cat.construction', icon: '🧱' },
     { titleKey: 'land.cat.more', icon: '★' },
+  ]
+
+  const productSku: { nameKey: Key; taglineKey: Key; skuKey: Key; badge: string }[] = [
+    { badge: '🪙', nameKey: 'land.products.bullion.name', taglineKey: 'land.products.bullion.desc', skuKey: 'land.products.bullion.sku' },
+    { badge: '💎', nameKey: 'land.products.portfolio.name', taglineKey: 'land.products.portfolio.desc', skuKey: 'land.products.portfolio.sku' },
+    { badge: '✦', nameKey: 'land.products.fabrication.name', taglineKey: 'land.products.fabrication.desc', skuKey: 'land.products.fabrication.sku' },
+  ]
+
+  const partnershipBullets: Key[] = ['land.partnership.b1', 'land.partnership.b2', 'land.partnership.b3']
+
+  const aboutPillars: { titleKey: Key; descKey: Key }[] = [
+    { titleKey: 'land.about.p1.title', descKey: 'land.about.p1.desc' },
+    { titleKey: 'land.about.p2.title', descKey: 'land.about.p2.desc' },
+    { titleKey: 'land.about.p3.title', descKey: 'land.about.p3.desc' },
   ]
 
   const investBullets: { titleKey: Key; icon: string }[] = [
@@ -133,6 +148,53 @@ export function LandingPage() {
         </div>
       </section>
 
+      <section
+        id="markets"
+        className="scroll-mt-24 border-y border-white/5 bg-gradient-to-b from-void-950/80 via-void-900/40 to-transparent py-16 sm:py-20"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="font-display text-[10px] font-bold uppercase tracking-[0.35em] text-gold-500/95">{t('land.markets.kicker')}</p>
+            <h2 className="mt-3 font-display text-2xl font-bold uppercase tracking-[0.12em] text-zinc-100 sm:text-3xl">{t('land.markets.title')}</h2>
+            <p className="mt-4 text-sm leading-relaxed text-zinc-500">{t('land.markets.sub')}</p>
+          </div>
+          <LandingMarketCards interaction="band" className="mx-auto max-w-4xl" />
+          <p className="mx-auto mt-10 max-w-2xl text-center text-[11px] leading-relaxed text-zinc-600">{t('land.markets.footnote')}</p>
+        </div>
+      </section>
+
+      <section id="products" className="scroll-mt-24 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mb-14 text-center">
+          <p className="font-display text-[10px] font-bold uppercase tracking-[0.35em] text-gold-500/95">{t('land.products.kicker')}</p>
+          <h2 className="mt-3 font-display text-xs font-bold tracking-[0.22em] text-zinc-100 sm:text-sm">{t('land.products.title')}</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-zinc-500">{t('land.products.lead')}</p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          {productSku.map((prod, i) => (
+            <motion.div
+              key={prod.nameKey}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+              className="group flex flex-col rounded-2xl border border-white/5 bg-gradient-to-b from-void-900/60 to-black/70 p-7 shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition hover:border-gold-500/25"
+            >
+              <span className="mb-5 text-3xl">{prod.badge}</span>
+              <h3 className="font-display text-sm font-bold uppercase tracking-wider text-zinc-100">{t(prod.nameKey)}</h3>
+              <p className="mt-4 flex-1 text-xs leading-relaxed text-zinc-500">{t(prod.taglineKey)}</p>
+              <p className="mt-6 rounded-lg border border-gold-500/15 bg-black/40 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-gold-400/90">
+                {t(prod.skuKey)}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+        <div className="mt-12 flex justify-center">
+          <Link to={user ? dashboardTo : '/register'} className="ms-btn-gold px-10 py-3.5 text-xs font-bold uppercase tracking-[0.2em]">
+            {t('land.products.cta')} <span className="ml-2">›</span>
+          </Link>
+        </div>
+      </section>
+
       <section id="collection" className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <h2 className="mb-10 text-center font-display text-sm font-bold tracking-[0.2em] text-zinc-100">
           {t('land.categories.title')}
@@ -194,6 +256,28 @@ export function LandingPage() {
         </div>
       </section>
 
+      <section
+        id="partnership"
+        className="scroll-mt-24 border-y border-gold-500/10 bg-gradient-to-br from-gold-500/[0.06] via-transparent to-void-950 py-20"
+      >
+        <div className="mx-auto grid max-w-7xl gap-14 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-6">
+          <div>
+            <p className="font-display text-[10px] font-bold uppercase tracking-[0.35em] text-gold-500">{t('land.partnership.kicker')}</p>
+            <h2 className="mt-4 font-display text-2xl font-bold uppercase tracking-wide text-zinc-100 md:text-3xl">{t('land.partnership.title')}</h2>
+            <p className="mt-6 text-sm leading-relaxed text-zinc-400">{t('land.partnership.body')}</p>
+          </div>
+          <ul className="space-y-6">
+            {partnershipBullets.map((k) => (
+              <li key={k} className="flex gap-4 border-l-2 border-gold-500/50 pl-5">
+                <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gold-500/70" aria-hidden />
+                <p className="text-sm leading-relaxed text-zinc-400">{t(k)}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="lg:col-span-2 rounded-xl border border-white/10 bg-black/35 p-5 text-[11px] leading-relaxed text-zinc-500">{t('land.partnership.disclaimer')}</p>
+        </div>
+      </section>
+
       <section id="invest" className="mx-auto w-full max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-3">
           <div className="lg:col-span-1">
@@ -219,6 +303,32 @@ export function LandingPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section id="about" className="scroll-mt-24 border-t border-white/5 bg-void-900/35 py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="font-display text-[10px] font-bold uppercase tracking-[0.35em] text-gold-500/95">{t('land.about.kicker')}</p>
+            <h2 className="mt-4 font-display text-2xl font-bold uppercase tracking-widest text-zinc-100 md:text-3xl">{t('land.about.title')}</h2>
+            <p className="mt-6 text-sm leading-relaxed text-zinc-400">{t('land.about.lead')}</p>
+          </div>
+          <div className="mt-14 grid gap-8 md:grid-cols-3">
+            {aboutPillars.map((col, i) => (
+              <motion.div
+                key={col.titleKey}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+                className="rounded-2xl border border-white/5 bg-void-950/55 p-6 text-center backdrop-blur-sm md:text-left"
+              >
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-gold-400/95">{t(col.titleKey)}</h3>
+                <p className="mt-4 text-[13px] leading-relaxed text-zinc-400">{t(col.descKey)}</p>
+              </motion.div>
+            ))}
+          </div>
+          <p className="mx-auto mt-12 max-w-2xl text-center text-[11px] text-zinc-600">{t('land.about.footnote')}</p>
         </div>
       </section>
 

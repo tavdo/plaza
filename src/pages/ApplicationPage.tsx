@@ -10,6 +10,9 @@ import { PageFade } from '../components/AnimatedLayout'
 import { useHydration } from '../hooks/useHydration'
 import { useTranslation } from '../hooks/useTranslation'
 import { COIN_OPTION_KEYS, displayCoinType, t as translateStatic, type Key, type Lang } from '../lib/i18n'
+import { ApplicationNanoAiSection } from '../features/application-ai/ApplicationNanoAiSection'
+import { metalToneFromCoinType } from '../features/application-ai/metalFromCoinType'
+import { ModelViewer } from '../features/ai-generator/components/ModelViewer'
 
 type FormValues = z.infer<ReturnType<typeof buildFullSchema>>
 
@@ -40,6 +43,22 @@ function mergeDraft(d: ApplicationDraft | null): FormValues {
   return base
 }
 
+function composePersistedDraft(prev: ApplicationDraft | null, vals: FormValues, nextStep: ApplicationDraft['step']): ApplicationDraft {
+  return {
+    ...defaultApplicationDraft,
+    ...prev,
+    ...vals,
+    step: nextStep,
+  }
+}
+
+function coinPurityLabelKeyForSku(coinSku: string | undefined): Key {
+  const m = metalToneFromCoinType(coinSku ?? '')
+  if (m === 'gold') return 'app.label.goldAu'
+  if (m === 'platinum') return 'app.label.platinumPt'
+  return 'app.label.silverAg'
+}
+
 export function ApplicationPage() {
   const { t, lang } = useTranslation()
   const language = lang
@@ -56,7 +75,7 @@ export function ApplicationPage() {
   const formInit = useRef(false)
   const step = (applicationDraft?.step ?? 0) as ApplicationDraft['step']
 
-  const fullSchema = useMemo(() => buildFullSchema(t), [t, language])
+  const fullSchema = useMemo(() => buildFullSchema(t), [t])
 
   const stepsList = useMemo(
     () =>
@@ -100,9 +119,20 @@ export function ApplicationPage() {
   }, [application, navigate])
 
   const draftSave = (vals: FormValues, nextStep: ApplicationDraft['step']) => {
+    const prev = useAppStore.getState().applicationDraft
+    setApplicationDraft(composePersistedDraft(prev, vals, nextStep))
+  }
+
+  const patchAiDraft = (
+    patch: Partial<
+      Pick<ApplicationDraft, 'aiPrompt' | 'aiGenerationStatus' | 'aiProgressPercent' | 'aiPreviewSnapshot'>
+    >,
+  ) => {
+    const prev = useAppStore.getState().applicationDraft
+    const vals = getValues()
     setApplicationDraft({
-      ...vals,
-      step: nextStep,
+      ...composePersistedDraft(prev, vals, prev?.step ?? 0),
+      ...patch,
     })
   }
 
@@ -112,11 +142,9 @@ export function ApplicationPage() {
     window.clearTimeout(saveTimer.current)
     saveTimer.current = window.setTimeout(() => {
       const vals = getValues()
-      const currentStep = useAppStore.getState().applicationDraft?.step ?? 0
-      setApplicationDraft({
-        ...vals,
-        step: currentStep as ApplicationDraft['step'],
-      })
+      const prev = useAppStore.getState().applicationDraft
+      const currentStep = prev?.step ?? 0
+      setApplicationDraft(composePersistedDraft(prev, vals, currentStep as ApplicationDraft['step']))
     }, 500)
     return () => window.clearTimeout(saveTimer.current)
   }, [watched, ready, getValues, setApplicationDraft])
@@ -166,7 +194,9 @@ export function ApplicationPage() {
     setSubmitting(true)
     window.setTimeout(() => {
       try {
-        submitApplication(data)
+        // TODO: Connect Nano Banana API here — replace local draft snapshot with authoritative server payload on submit.
+        const aiPreview = useAppStore.getState().applicationDraft?.aiPreviewSnapshot ?? null
+        submitApplication({ ...data, aiPreview })
         setApplicationDraft(null)
         toast.success(t('toast.applicationReceived'))
         void navigate('/summary', { replace: true })
@@ -261,8 +291,8 @@ export function ApplicationPage() {
                             <input
                               type="text"
                               className="ms-input"
-                              key={`metal-label-${language}`}
-                              value={t('app.label.silverAg')}
+                              key={`metal-label-${language}-${watched?.coinType ?? ''}`}
+                              value={t(coinPurityLabelKeyForSku(watched?.coinType))}
                               disabled
                               readOnly
                             />
@@ -284,6 +314,23 @@ export function ApplicationPage() {
                         />
                         {errors.additionalInfo && <p className="mt-1 text-xs text-red-400">{errors.additionalInfo.message}</p>}
                       </div>
+
+                      {watched?.coinType ? (
+                        <ApplicationNanoAiSection
+                          coinType={watched.coinType}
+                          amount={
+                            typeof watched.amount === 'number' && Number.isFinite(watched.amount) ? watched.amount : defaultApplicationDraft.amount
+                          }
+                          langMetalLabel={metalToneFromCoinType(watched.coinType)}
+                          draftAi={{
+                            aiPrompt: applicationDraft?.aiPrompt ?? defaultApplicationDraft.aiPrompt,
+                            aiGenerationStatus: applicationDraft?.aiGenerationStatus ?? defaultApplicationDraft.aiGenerationStatus,
+                            aiProgressPercent: applicationDraft?.aiProgressPercent ?? defaultApplicationDraft.aiProgressPercent,
+                            aiPreviewSnapshot: applicationDraft?.aiPreviewSnapshot ?? null,
+                          }}
+                          onPatchDraftAi={patchAiDraft}
+                        />
+                      ) : null}
 
                     </motion.div>
                   )}
@@ -354,6 +401,80 @@ export function ApplicationPage() {
                            </div>
                          </div>
                        </div>
+
+                       {(applicationDraft?.aiPrompt?.trim() || applicationDraft?.aiPreviewSnapshot) && (
+                         <div className="rounded-xl border border-gold-500/20 bg-gradient-to-br from-gold-500/5 via-void-950/40 to-void-950/60 p-6">
+                           <h3 className="mb-3 text-sm font-bold tracking-wider text-gold-400">{t('app.summary.aiBlockTitle')}</h3>
+                           {applicationDraft?.aiPrompt?.trim() ? (
+                             <div className="mb-4">
+                               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{t('app.summary.aiPrompt')}</p>
+                               <p className="mt-2 text-sm leading-relaxed text-zinc-200">{applicationDraft.aiPrompt}</p>
+                             </div>
+                           ) : null}
+                           {applicationDraft?.aiPreviewSnapshot ? (
+                             <div className="space-y-4">
+                               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3 text-[10px] font-bold uppercase tracking-wider">
+                                 <span className="text-emerald-400/90">{t('app.summary.aiStatus.complete')}</span>
+                               </div>
+                               <dl className="grid gap-2 text-sm text-zinc-300 sm:grid-cols-2">
+                                 <div className="flex justify-between gap-2 border-b border-white/5 pb-2">
+                                   <dt className="text-zinc-500">{t('app.summary.aiObject')}</dt>
+                                   <dd className="text-right">{applicationDraft.aiPreviewSnapshot.objectDisplayName}</dd>
+                                 </div>
+                                 <div className="flex justify-between gap-2 border-b border-white/5 pb-2">
+                                   <dt className="text-zinc-500">{t('app.ai.card.polygons')}</dt>
+                                   <dd className="text-right">
+                                     {applicationDraft.aiPreviewSnapshot.polygonCount.toLocaleString(lang === 'ka' ? 'ka-GE' : 'en-US')}
+                                   </dd>
+                                 </div>
+                                 <div className="flex justify-between gap-2 border-b border-white/5 pb-2">
+                                   <dt className="text-zinc-500">{t('app.ai.card.score')}</dt>
+                                   <dd className="text-right">{applicationDraft.aiPreviewSnapshot.aiQualityScore}</dd>
+                                 </div>
+                                 <div className="flex justify-between gap-2 pb-2">
+                                   <dt className="text-zinc-500">{t('app.summary.aiCost')}</dt>
+                                   <dd className="text-right text-gold-200/90">
+                                     {applicationDraft.aiPreviewSnapshot.estimatedProductionCostUsd.toLocaleString(
+                                       lang === 'ka' ? 'ka-GE' : 'en-US',
+                                       {
+                                         style: 'currency',
+                                         currency: 'USD',
+                                         maximumFractionDigits: 2,
+                                       },
+                                     )}
+                                   </dd>
+                                 </div>
+                               </dl>
+                               {applicationDraft.aiPreviewSnapshot.conceptImageUrl ? (
+                                 <div className="space-y-2">
+                                   <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{t('sum.ai.nanoPlate')}</p>
+                                   <div className="overflow-hidden rounded-xl border border-white/10">
+                                     <img
+                                       src={applicationDraft.aiPreviewSnapshot.conceptImageUrl}
+                                       alt=""
+                                       className="aspect-square max-h-72 w-full object-cover object-center sm:max-h-80"
+                                     />
+                                   </div>
+                                 </div>
+                               ) : null}
+                               <div className="overflow-hidden rounded-xl border border-white/10">
+                                 <p className="border-b border-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                                   {watched?.coinType ? `${displayCoinType(watched.coinType, lang)} · ` : ''}
+                                   {applicationDraft.aiPreviewSnapshot.conceptImageUrl
+                                     ? t('app.ai.viewportGlb')
+                                     : t('app.ai.preview.viewport')}
+                                 </p>
+                                 <div className="min-h-[220px] sm:min-h-[260px]">
+                                   {/* TODO: Stream production GLB URLs from Nano Banana / mesh pipeline. */}
+                                   <ModelViewer url={applicationDraft.aiPreviewSnapshot.glbUrl} />
+                                 </div>
+                               </div>
+                             </div>
+                           ) : applicationDraft?.aiPrompt?.trim() ? (
+                             <p className="text-xs text-zinc-500">{t('app.summary.aiStatus.other')}</p>
+                           ) : null}
+                         </div>
+                       )}
                     </motion.div>
                   )}
                 </AnimatePresence>

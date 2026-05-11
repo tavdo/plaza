@@ -5,6 +5,7 @@ import { PageFade } from '../components/AnimatedLayout'
 import { useHydration } from '../hooks/useHydration'
 import { formatMoney, useTranslation } from '../hooks/useTranslation'
 import { displayCoinType } from '../lib/i18n'
+import { ModelViewer } from '../features/ai-generator/components/ModelViewer'
 
 export function SummaryPage() {
   const ready = useHydration()
@@ -84,6 +85,59 @@ export function SummaryPage() {
               </div>
             ) : null}
           </dl>
+
+          {app.aiPreview ? (
+            <div className="mt-8 space-y-5 rounded-2xl border border-gold-500/20 bg-gradient-to-br from-gold-500/[0.07] via-void-950/55 to-black/80 p-5 light:border-amber-300/35 light:from-amber-50 light:via-white light:to-zinc-50">
+              <div>
+                <h2 className="text-lg font-semibold tracking-wide text-gold-200 light:text-amber-900">{t('sum.ai.sectionTitle')}</h2>
+                <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600 light:text-zinc-500">{t('sum.ai.viewerCaption')}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{t('sum.ai.promptLabel')}</p>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-200 light:text-zinc-800">{app.aiPreview.prompt}</p>
+              </div>
+              {app.aiPreview.conceptImageUrl ? (
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{t('sum.ai.nanoPlate')}</p>
+                  <div className="overflow-hidden rounded-xl border border-white/10 light:border-zinc-200">
+                    <img
+                      src={app.aiPreview.conceptImageUrl}
+                      alt=""
+                      className="aspect-square w-full max-h-80 object-cover object-center sm:max-h-96"
+                    />
+                  </div>
+                </div>
+              ) : null}
+              <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                <div className="flex justify-between gap-4 border-b border-white/10 pb-2 light:border-zinc-200">
+                  <dt className="text-zinc-500">{t('sum.ai.polygons')}</dt>
+                  <dd className="font-mono text-zinc-200 light:text-zinc-800">{app.aiPreview.polygonCount.toLocaleString(lang === 'ka' ? 'ka-GE' : 'en-US')}</dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-white/10 pb-2 light:border-zinc-200">
+                  <dt className="text-zinc-500">{t('sum.ai.qualityScore')}</dt>
+                  <dd className="text-zinc-200 light:text-zinc-800">{app.aiPreview.aiQualityScore}</dd>
+                </div>
+                <div className="flex justify-between gap-4 pb-2 sm:col-span-2">
+                  <dt className="text-zinc-500">{t('sum.ai.cost')}</dt>
+                  <dd className="text-right text-gold-200/95 light:text-amber-900">
+                    {app.aiPreview.estimatedProductionCostUsd.toLocaleString(lang === 'ka' ? 'ka-GE' : 'en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                      maximumFractionDigits: 2,
+                    })}
+                  </dd>
+                </div>
+              </dl>
+              <div className="overflow-hidden rounded-xl border border-white/10 light:border-zinc-200">
+                <p className="border-b border-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500 light:border-zinc-200">
+                  {app.aiPreview.conceptImageUrl ? t('app.ai.viewportGlb') : t('app.ai.preview.viewport')}
+                </p>
+                <div className="min-h-[240px] sm:min-h-[300px]">
+                  <ModelViewer url={app.aiPreview.glbUrl} />
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           <div className="mt-8 rounded-2xl border border-amber-500/20 bg-void-950/50 p-4 light:border-amber-200 light:bg-amber-50/60">
             <h2 className="text-sm font-semibold text-amber-200/90 light:text-amber-900">

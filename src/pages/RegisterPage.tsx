@@ -9,17 +9,9 @@ import { useAppStore, isAgreementComplete } from '../stores/useAppStore'
 import { PageFade } from '../components/AnimatedLayout'
 import { useTranslation } from '../hooks/useTranslation'
 import type { Key } from '../lib/i18n'
+import { registerDemoPreset } from '../lib/registerDemoData'
 
 type Form = z.infer<ReturnType<typeof buildSchema>>
-
-export const demoUser: Form = {
-  firstName: 'Alex',
-  lastName: 'Demo',
-  personalId: 'DEMO-0001',
-  phone: '+1-555-0100',
-  email: 'demo@mergestars.test',
-  password: 'DemoTest1!',
-}
 
 function buildSchema(tr: (k: Key) => string) {
   return z.object({
@@ -39,11 +31,10 @@ export function RegisterPage() {
   const agreement = useAppStore((s) => s.agreement)
   const application = useAppStore((s) => s.application)
   const registerUser = useAppStore((s) => s.registerUser)
-  const language = useAppStore((s) => s.language)
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('register')
 
-  const schema = useMemo(() => buildSchema(t), [t, language])
+  const schema = useMemo(() => buildSchema(t), [t])
 
   const {
     register,
@@ -219,7 +210,7 @@ export function RegisterPage() {
                   <div className="pt-4 flex items-center justify-between">
                      <button
                         type="button"
-                        onClick={() => { reset(demoUser); toast.info(t('reg.demoToast')) }}
+                        onClick={() => { reset(registerDemoPreset as Form); toast.info(t('reg.demoToast')) }}
                         className="text-xs text-gold-400 hover:underline"
                       >
                         {t('reg.fillDemo')}

@@ -4,9 +4,8 @@ import { useAppStore, isAgreementComplete } from '../stores/useAppStore'
 import { PageFade } from '../components/AnimatedLayout'
 import { useHydration } from '../hooks/useHydration'
 import { formatMoney, useTranslation } from '../hooks/useTranslation'
-import { displayCoinType, translateApplicationStatus } from '../lib/i18n'
+import { displayCoinType, translateApplicationStatus, type Key } from '../lib/i18n'
 import { LANDING_METALS } from '../lib/markets'
-import type { Key } from '../lib/i18n'
 
 const sidebarDefs: { id: string; labelKey: Key; icon: string; active?: boolean; badge?: number }[] = [
   { id: 'dashboard', labelKey: 'dash.sidebar.dashboard', icon: '⊞', active: true },
@@ -43,12 +42,12 @@ export function DashboardPage() {
     return <Navigate to="/terms" replace />
   }
 
+  const metals = LANDING_METALS
+
   const handleLogout = () => {
     useAppStore.getState().resetAll()
     navigate('/')
   }
-
-  const metals = LANDING_METALS
 
   return (
     <PageFade>
@@ -57,8 +56,10 @@ export function DashboardPage() {
         <div className="flex flex-col gap-6 lg:flex-row">
 
           <div className="w-full shrink-0 overflow-hidden rounded-2xl border border-white/5 bg-void-900/80 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl lg:w-64">
-            <div className="p-6 text-center border-b border-white/5">
-              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center text-3xl text-gold-500" aria-hidden>★</div>
+            <div className="border-b border-white/5 p-6 text-center">
+              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center text-3xl text-gold-500" aria-hidden>
+                ★
+              </div>
               <div className="font-display text-lg font-bold leading-none tracking-widest text-zinc-100">MERGE</div>
               <div className="font-display text-sm font-medium leading-none tracking-[0.2em] text-zinc-400">STARS</div>
             </div>
@@ -69,17 +70,17 @@ export function DashboardPage() {
                   key={link.id}
                   type="button"
                   onClick={link.id === 'logout' ? handleLogout : undefined}
-                  className={`flex items-center justify-between rounded-lg px-4 py-3 text-xs font-bold tracking-wider transition-colors ${link.active ? 'bg-gold-500/10 text-gold-400 border border-gold-500/20' : 'text-zinc-500 hover:bg-void-800 hover:text-zinc-300'}`}
+                  className={`flex items-center justify-between rounded-lg px-4 py-3 text-xs font-bold tracking-wider transition-colors ${link.active ? 'border border-gold-500/20 bg-gold-500/10 text-gold-400' : 'text-zinc-500 hover:bg-void-800 hover:text-zinc-300'}`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-lg">{link.icon}</span>
                     {t(link.labelKey)}
                   </div>
-                  {link.badge !== undefined && (
+                  {link.badge !== undefined ? (
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
                       {link.badge}
                     </span>
-                  )}
+                  ) : null}
                 </button>
               ))}
             </nav>
@@ -90,10 +91,10 @@ export function DashboardPage() {
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
               <div>
                 <p className="text-xs tracking-wider text-zinc-500">{t('dash.welcome')}</p>
-                <h1 className="font-display text-2xl font-bold tracking-widest text-zinc-100 uppercase">
+                <h1 className="font-display text-2xl font-bold uppercase tracking-widest text-zinc-100">
                   {user.firstName} {user.lastName}
                 </h1>
-                <p className="mt-1 text-xs font-mono tracking-wider text-gold-400">
+                <p className="mt-1 font-mono text-xs tracking-wider text-gold-400">
                   {t('dash.mergeId')} {user.personalId}
                 </p>
               </div>
@@ -168,6 +169,28 @@ export function DashboardPage() {
               </div>
             </div>
 
+            {app?.aiPreview ? (
+              <div className="flex flex-col gap-6 rounded-2xl border border-gold-500/25 bg-gradient-to-br from-gold-500/10 via-void-900/95 to-void-900 p-6 shadow-[0_0_40px_rgba(212,175,55,0.1)] backdrop-blur-xl sm:flex-row sm:items-start">
+                {app.aiPreview.conceptImageUrl ? (
+                  <div className="shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-lg sm:w-44">
+                    <img
+                      src={app.aiPreview.conceptImageUrl}
+                      alt=""
+                      className="aspect-square w-full object-cover object-center sm:h-36 sm:w-36"
+                    />
+                  </div>
+                ) : null}
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xs font-bold tracking-[0.2em] text-gold-400/95">{t('dash.embedAi.title')}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-300">{app.aiPreview.prompt}</p>
+                  <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
+                    {t(`app.ai.material.${app.aiPreview.coinTypeMetal}` as Key)} · {displayCoinType(app.coinType, lang)} ·{' '}
+                    {app.aiPreview.polygonCount.toLocaleString(lang === 'ka' ? 'ka-GE' : 'en-US')} {t('app.ai.polyShort')}
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
             <div className="grid gap-6 lg:grid-cols-3">
 
               <div className="rounded-2xl border border-white/5 bg-void-900/80 p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-xl lg:col-span-2">
@@ -180,7 +203,7 @@ export function DashboardPage() {
                         🪙
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold tracking-wider text-zinc-200 uppercase">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
                           {displayCoinType(app.coinType, lang)}
                         </h4>
                         <div className="mt-1 flex flex-wrap gap-4 text-[10px] text-zinc-500">
